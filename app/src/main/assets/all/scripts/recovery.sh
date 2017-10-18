@@ -26,6 +26,12 @@ ui_print "Installing BusyBox to $INSTALL_DIR..."
 cp busybox $INSTALL_DIR
 chmod 755 $INSTALL_DIR/busybox
 $INSTALL_DIR/busybox --install -s $INSTALL_DIR
+if [ -d /system/addon.d ]; then
+    cp addon.d.sh /system/addon.d/99-busybox.sh
+    chmod 755 /system/addon.d/99-busybox.sh
+    echo "$INSTALL_DIR" > /system/addon.d/busybox-install-dir
+    chmod 644 /system/addon.d/busybox-install-dir
+fi
 ui_print "Unmounting /system part..."
 umount /system
 exit 0

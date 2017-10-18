@@ -23,6 +23,13 @@ if busybox test -e "$INSTALL_DIR/busybox"
 then
     busybox rm "$INSTALL_DIR/busybox"
 fi
+
+if busybox test "$SYSTEM_REMOUNT" -ne 0 -a -d /system/addon.d
+then
+    busybox cp "$ENV_DIR/scripts/addon.d.sh" /system/addon.d/99-busybox.sh
+    echo "$INSTALL_DIR" > /system/addon.d/busybox-install-dir
+fi
+
 busybox cp $BB_BIN $INSTALL_DIR/busybox
 if busybox test $? -eq 0
 then
@@ -32,8 +39,17 @@ else
 fi
 
 busybox printf "Setting permissions ... "
+
+if busybox test "$SYSTEM_REMOUNT" -ne 0 -a -d /system/addon.d
+then
+    busybox chown 0:0 /system/addon.d/99-busybox.sh
+    busybox chmod 755 /system/addon.d/99-busybox.sh
+    busybox chmod 644 /system/addon.d/busybox-install-dir
+fi
+
 busybox chown 0:0 $INSTALL_DIR/busybox
 busybox chmod 755 $INSTALL_DIR/busybox
+
 if busybox test $? -eq 0
 then
     busybox printf "done\n"
